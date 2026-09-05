@@ -1,10 +1,25 @@
 import express from 'express';
+import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import counselingRoutes from './routes/counselingRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001; // Reloaded for clean rate limit window
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like server-to-server, curl, or mobile apps)
+      if (!origin) return callback(null, true);
+      // Reflect origin to enable cross-origin credentials with Vercel / custom domains
+      return callback(null, true);
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));

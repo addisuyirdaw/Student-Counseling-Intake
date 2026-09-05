@@ -55,17 +55,20 @@ export async function login(req, res) {
 
   const token = jwt.sign(tokenPayload, JWT_SECRET, { expiresIn: '24h' });
 
-  // Set HttpOnly, SameSite=Strict cookie
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  // Set HttpOnly cookie (SameSite=None in production allows cross-origin cookies between Vercel & Render)
   res.cookie('advisor_token', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
     path: '/',
   });
 
   return res.status(200).json({
     message: 'Authentication successful',
+    token,
     user: {
       name: staff.name,
       title: staff.title,
@@ -91,10 +94,11 @@ export function getMe(req, res) {
 }
 
 export function logout(req, res) {
+  const isProduction = process.env.NODE_ENV === 'production';
   res.clearCookie('advisor_token', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
     path: '/',
   });
 
