@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id                  String    @id @default(cuid())
+  studentId           String    @unique
+  firstName           String
+  lastName            String
+  email               String    @unique
+  phone               String
+  department          String
+  yearInSchool        String
+  gpa                 Float?
+  createdAt           DateTime  @default(now())
+  counselingRequests  CounselingRequest[]
+}
+
+model CounselingRequest {
+  id                     String   @id @default(cuid())
+  student                Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId              String
+  counselingTopic        String
+  topicCustom            String?
+  concernDescription     String
+  hadPreviousCounseling  Boolean
+  previousCounselingDetails String?
+  preferredDays          String
+  preferredTimeSlots     String
+  additionalComments     String?
+  consentGiven           Boolean
+  signatureDataUrl       String
+  advisorNotes           String?
+  urgencyLevel           String   @default("MEDIUM")
+  status                 String   @default("PENDING")
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @default(now()) @updatedAt
+
+  @@index([studentId])
+  @@index([status])
+}
