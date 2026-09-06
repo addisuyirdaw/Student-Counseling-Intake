@@ -4,11 +4,12 @@ import {
   X, Eye, Calendar, User, FileText, Filter, GraduationCap, 
   AlertTriangle, ShieldCheck, LogOut, Check, ArrowRight, 
   Users, Inbox, CalendarCheck, CheckCheck, Sparkles, TrendingUp,
-  Activity
+  Activity, UserCog
 } from 'lucide-react';
 import { getRequests, updateStatus, getCounts, getAuthMe, logoutAdvisor } from '../services/api';
 import RequestDetailModal from '../components/RequestDetailModal';
 import AdvisorLoginGate from '../components/AdvisorLoginGate';
+import AdvisorProfileModal from '../components/AdvisorProfileModal';
 
 const STATUS_COLORS = {
   PENDING: 'bg-amber-50 text-amber-800 border-amber-200/80',
@@ -31,6 +32,7 @@ export default function CounselorDashboard() {
   });
 
   const [authChecking, setAuthChecking] = useState(true);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
 
   // Verify HttpOnly cookie session on page load
   useEffect(() => {
@@ -239,18 +241,31 @@ export default function CounselorDashboard() {
               </span>
             </div>
             <p className="text-[11px] sm:text-xs text-slate-300 mt-0.5 truncate">
-              Logged in as <strong className="text-white">{authUser.name}</strong> ({authUser.title})
+              Logged in as <strong className="text-white">{authUser.name}</strong> ({authUser.title || authUser.role})
             </p>
           </div>
         </div>
 
-        <button
-          onClick={handleSignOut}
-          className="self-end sm:self-center flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white/10 hover:bg-white/20 text-white rounded-lg transition border border-white/10 cursor-pointer"
-        >
-          <LogOut size={13} />
-          Sign Out
-        </button>
+        <div className="self-end sm:self-center flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setProfileModalOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white/10 hover:bg-white/20 text-white rounded-lg transition border border-white/15 cursor-pointer shadow-xs"
+            title="Profile & Password Settings"
+          >
+            <UserCog size={14} />
+            <span>Profile & Password</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white/10 hover:bg-white/20 text-white rounded-lg transition border border-white/10 cursor-pointer"
+          >
+            <LogOut size={13} />
+            <span>Sign Out</span>
+          </button>
+        </div>
       </div>
 
       {/* Polished Top Quick Stats Summary Row with Border Gradients & Trends */}
@@ -771,6 +786,14 @@ export default function CounselorDashboard() {
           onNotesUpdated={handleNotesUpdated}
         />
       )}
+
+      {/* Advisor Profile & Password Update Modal */}
+      <AdvisorProfileModal
+        isOpen={profileModalOpen}
+        onClose={() => setProfileModalOpen(false)}
+        authUser={authUser}
+        onProfileUpdated={(updated) => setAuthUser(updated)}
+      />
     </div>
   );
 }

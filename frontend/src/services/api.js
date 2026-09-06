@@ -70,3 +70,21 @@ export async function logoutAdvisor() {
   sessionStorage.removeItem('advisor_token');
   return response.data;
 }
+
+export async function updateAdvisorProfile(data) {
+  const response = await authApi.patch('/staff/me', data);
+  if (response.data?.token) {
+    sessionStorage.setItem('advisor_token', response.data.token);
+  }
+  return response.data;
+}
+
+export async function getStaffList() {
+  const response = await authApi.get('/staff');
+  return response.data;
+}
+
+export async function adminUpdateStaff(id, data) {
+  const response = await authApi.patch(`/staff/${id}`, data);
+  return response.data;
+}
