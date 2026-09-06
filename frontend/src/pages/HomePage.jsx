@@ -82,27 +82,21 @@ export default function HomePage() {
   return (
     <div className="w-full bg-slate-50 text-slate-900 overflow-x-hidden">
       {/* 1. HERO SECTION */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-primary-950 via-slate-900 to-slate-900 text-white py-16 sm:py-24 lg:py-28 px-4 sm:px-6 lg:px-8">
-        {/* Subtle Background Glows */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full overflow-hidden pointer-events-none z-0">
-          <div className="absolute -top-24 left-1/4 w-96 h-96 bg-primary-600/20 rounded-full blur-3xl" />
-          <div className="absolute top-1/3 right-1/4 w-80 h-80 bg-indigo-500/15 rounded-full blur-3xl" />
-        </div>
-
+      <section className="relative overflow-hidden bg-gradient-to-b from-blue-50/80 via-slate-50 to-white text-slate-900 py-16 sm:py-24 lg:py-28 px-4 sm:px-6 lg:px-8 border-b border-slate-200/80">
         <div className="relative max-w-5xl mx-auto text-center z-10">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-primary-200 text-xs font-semibold mb-6 backdrop-blur-md shadow-inner">
-            <Sparkles size={14} className="text-primary-400" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100/80 border border-blue-200 text-blue-800 text-xs font-bold mb-6 shadow-2xs">
+            <Sparkles size={14} className="text-blue-600" />
             <span>{t('hero_badge')}</span>
           </div>
 
-          {/* Main Title */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight sm:leading-tight mb-5 max-w-4xl mx-auto">
+          {/* Main Title - High-contrast deep navy/slate */}
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight sm:leading-tight mb-5 max-w-4xl mx-auto text-[#0f172a]">
             {t('hero_title')}
           </h1>
 
-          {/* Subtitle */}
-          <p className="text-sm sm:text-lg text-slate-300 max-w-2xl mx-auto mb-8 sm:mb-10 leading-relaxed">
+          {/* Subtitle - High-contrast slate gray */}
+          <p className="text-sm sm:text-lg text-[#334155] max-w-2xl mx-auto mb-8 sm:mb-10 leading-relaxed font-normal">
             {t('hero_subtitle')}
           </p>
 
@@ -110,7 +104,7 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 sm:gap-4 mb-12">
             <Link
               to="/intake"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-primary-600 hover:bg-primary-500 text-white text-sm sm:text-base font-bold rounded-xl shadow-lg hover:shadow-primary-600/30 transition transform hover:-translate-y-0.5 cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-[#2563eb] hover:bg-blue-700 text-white text-sm sm:text-base font-bold rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5 cursor-pointer"
             >
               <span>{t('hero_cta_primary')}</span>
               <ArrowRight size={18} />
@@ -118,7 +112,7 @@ export default function HomePage() {
 
             <a
               href="#services"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white/10 hover:bg-white/15 border border-white/20 text-white text-sm sm:text-base font-semibold rounded-xl backdrop-blur-sm transition cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 hover:text-slate-900 text-sm sm:text-base font-semibold rounded-xl shadow-2xs transition cursor-pointer"
             >
               <span>{t('hero_cta_secondary')}</span>
               <ChevronDown size={18} />
@@ -126,22 +120,22 @@ export default function HomePage() {
           </div>
 
           {/* Trust Highlights Strip */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-6 border-t border-white/10 max-w-4xl mx-auto text-left">
-            <div className="flex items-center gap-2.5 p-2 rounded-lg bg-white/5 border border-white/5">
-              <CheckCircle2 size={18} className="text-emerald-400 flex-shrink-0" />
-              <span className="text-xs font-semibold text-slate-200">{t('hero_trust_free')}</span>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-8 border-t border-slate-200 max-w-4xl mx-auto text-left">
+            <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/90 shadow-2xs">
+              <CheckCircle2 size={18} className="text-emerald-600 flex-shrink-0" />
+              <span className="text-xs font-bold text-slate-800">{t('hero_trust_free')}</span>
             </div>
-            <div className="flex items-center gap-2.5 p-2 rounded-lg bg-white/5 border border-white/5">
-              <Lock size={18} className="text-primary-400 flex-shrink-0" />
-              <span className="text-xs font-semibold text-slate-200">{t('hero_trust_confidential')}</span>
+            <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/90 shadow-2xs">
+              <Lock size={18} className="text-blue-600 flex-shrink-0" />
+              <span className="text-xs font-bold text-slate-800">{t('hero_trust_confidential')}</span>
             </div>
-            <div className="flex items-center gap-2.5 p-2 rounded-lg bg-white/5 border border-white/5">
-              <UserCheck size={18} className="text-indigo-400 flex-shrink-0" />
-              <span className="text-xs font-semibold text-slate-200">{t('hero_trust_licensed')}</span>
+            <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/90 shadow-2xs">
+              <UserCheck size={18} className="text-indigo-600 flex-shrink-0" />
+              <span className="text-xs font-bold text-slate-800">{t('hero_trust_licensed')}</span>
             </div>
-            <div className="flex items-center gap-2.5 p-2 rounded-lg bg-white/5 border border-white/5">
-              <Clock size={18} className="text-amber-400 flex-shrink-0" />
-              <span className="text-xs font-semibold text-slate-200">{t('hero_trust_speed')}</span>
+            <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/90 shadow-2xs">
+              <Clock size={18} className="text-amber-600 flex-shrink-0" />
+              <span className="text-xs font-bold text-slate-800">{t('hero_trust_speed')}</span>
             </div>
           </div>
         </div>
