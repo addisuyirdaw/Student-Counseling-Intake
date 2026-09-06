@@ -110,7 +110,7 @@ export async function updateSelf(req, res) {
     return res.status(401).json({ error: 'Unauthorized: No advisor session' });
   }
 
-  const { name, email, currentPassword, newPassword, avatarUrl } = req.body;
+  const { name, email, newPassword, avatarUrl } = req.body;
 
   try {
     const advisor = await prisma.advisor.findUnique({
@@ -145,17 +145,8 @@ export async function updateSelf(req, res) {
       }
     }
 
-    // 3. Update Password
+    // 3. Update Password — no current password check required
     if (newPassword) {
-      if (!currentPassword) {
-        return res.status(400).json({ error: 'Current password is required to change password' });
-      }
-
-      const passwordMatch = await bcrypt.compare(currentPassword, advisor.passwordHash);
-      if (!passwordMatch) {
-        return res.status(401).json({ error: 'Current password does not match' });
-      }
-
       updateData.passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
     }
 

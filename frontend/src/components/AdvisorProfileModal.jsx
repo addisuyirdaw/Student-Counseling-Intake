@@ -3,7 +3,6 @@ import {
   X,
   User,
   Mail,
-  Lock,
   KeyRound,
   Eye,
   EyeOff,
@@ -32,12 +31,10 @@ export default function AdvisorProfileModal({ isOpen, onClose, authUser, onProfi
   const [email, setEmail] = useState(authUser?.email || '');
   const [avatarUrl, setAvatarUrl] = useState(authUser?.avatarUrl || null);
   const [avatarPreview, setAvatarPreview] = useState(authUser?.avatarUrl || '');
-  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
   // Password Visibility Toggles
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -70,7 +67,6 @@ export default function AdvisorProfileModal({ isOpen, onClose, authUser, onProfi
       setEmail(authUser.email || '');
       setAvatarUrl(authUser.avatarUrl || null);
       setAvatarPreview(authUser.avatarUrl || '');
-      setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
       setErrorMsg(null);
@@ -188,10 +184,6 @@ export default function AdvisorProfileModal({ isOpen, onClose, authUser, onProfi
         setErrorMsg('New passwords do not match.');
         return;
       }
-      if (!currentPassword) {
-        setErrorMsg('Current password is required to set a new password.');
-        return;
-      }
     }
 
     setLoading(true);
@@ -202,13 +194,11 @@ export default function AdvisorProfileModal({ isOpen, onClose, authUser, onProfi
         avatarUrl: avatarUrl !== undefined ? avatarUrl : (authUser?.avatarUrl || null),
       };
       if (newPassword) {
-        payload.currentPassword = currentPassword;
         payload.newPassword = newPassword;
       }
 
       const res = await updateAdvisorProfile(payload);
       setSuccessMsg(res.message || 'Profile updated successfully!');
-      setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
 
@@ -500,27 +490,6 @@ export default function AdvisorProfileModal({ isOpen, onClose, authUser, onProfi
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">Change Password</h4>
                   <p className="text-[11px] text-slate-500">Leave blank if you do not wish to update your password.</p>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Current Password</label>
-                  <div className="relative">
-                    <Lock size={15} className="absolute left-3 top-2.5 text-slate-400" />
-                    <input
-                      type={showCurrentPassword ? 'text' : 'password'}
-                      value={currentPassword}
-                      onChange={(e) => setCurrentPassword(e.target.value)}
-                      placeholder="Enter current password to verify"
-                      className="w-full pl-9 pr-9 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-primary-500 text-slate-900 bg-white"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                      className="absolute right-3 top-2 text-slate-400 hover:text-slate-600 cursor-pointer"
-                    >
-                      {showCurrentPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-                    </button>
-                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
