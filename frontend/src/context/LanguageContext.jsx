@@ -3,12 +3,66 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const translations = {
   en: {
     // Navigation & Header
-    nav_title: 'Student Counseling Intake',
+    nav_title: 'StudentCareHub',
     nav_subtitle: 'University Mental Health & Academic Support',
+    nav_home: 'Home',
+    nav_services: 'Services',
+    nav_about: 'About Us',
+    nav_faqs: 'FAQs',
+    nav_emergency: 'Emergency Contacts',
     nav_intake_form: 'Intake Form',
+    nav_start_intake: 'Start Intake',
     nav_advisor_portal: 'Advisor Portal',
     nav_lang_toggle: 'አማርኛ',
     nav_lang_label: 'Language',
+
+    // Hero Section
+    hero_badge: 'University Student Mental Health & Academic Care',
+    hero_title: 'Compassionate, Confidential Student Care',
+    hero_subtitle: 'A safe, welcoming space for every student. Access free, confidential one-on-one psychological counseling, academic guidance, and crisis intervention tailored to university life.',
+    hero_cta_primary: 'Start Intake Request',
+    hero_cta_secondary: 'Explore Services',
+    hero_trust_free: '100% Free for Students',
+    hero_trust_confidential: 'FERPA & Confidentiality Protected',
+    hero_trust_licensed: 'Licensed University Counselors',
+    hero_trust_speed: '24–48h Prompt Response',
+
+    // Services Section
+    services_section_tag: 'Our Support Programs',
+    services_title: 'Specialized Services Tailored for You',
+    services_desc: 'From daily academic pressures to personal challenges, our professional counseling team is here to support you at every stage.',
+    service1_title: 'Mental Health Counseling',
+    service1_desc: 'Confidential support for anxiety, depression, emotional fatigue, grief, stress management, and building personal resilience.',
+    service2_title: 'Academic Guidance & Coaching',
+    service2_desc: 'Strategies for managing heavy workloads, exam anxiety, motivation dips, and establishing study-life balance.',
+    service3_title: 'Crisis Intervention & Triage',
+    service3_desc: 'Immediate and prioritized attention for students experiencing acute distress, panic, or overwhelming crises.',
+    service4_title: 'Wellness & Life Skills',
+    service4_desc: 'Practical guidance on sleep hygiene, healthy relationships, setting personal boundaries, and building self-esteem.',
+
+    // About Us Section
+    about_section_tag: 'Who We Are',
+    about_title: 'Dedicated to Your Academic & Emotional Wellness',
+    about_p1: 'University life brings exciting milestones alongside unexpected pressures. StudentCareHub was established as a dedicated sanctuary on campus where every enrolled student can seek guidance without judgment, fees, or barriers.',
+    about_p2: 'Our multidisciplinary team consists of licensed mental health clinicians, professional academic advisors, and student welfare specialists who adhere strictly to FERPA and university ethics guidelines.',
+    about_badge_ferpa_title: '100% Confidential Guarantee',
+    about_badge_ferpa_desc: 'Your intake and session records are strictly protected. Information is never shared with professors, university administration, or parents.',
+    about_badge_licensed_title: 'Certified & Compassionate Staff',
+    about_badge_licensed_desc: 'All counselors hold accredited degrees and undergo continuous clinical training in university youth psychology.',
+
+    // Emergency Contacts Section
+    emergency_section_tag: 'Urgent Care & Hotlines',
+    emergency_title: 'Need Immediate Help? We Are Here.',
+    emergency_desc: 'If you or a fellow student are experiencing an acute mental health crisis, self-harm thoughts, or urgent safety concerns, reach out immediately.',
+    emergency_card1_title: 'Campus Crisis Hotline',
+    emergency_card1_num: '555-0199',
+    emergency_card1_desc: 'Available 24/7 for on-campus student emergencies and urgent de-escalation.',
+    emergency_card2_title: 'National Suicide & Crisis Lifeline',
+    emergency_card2_num: '988',
+    emergency_card2_desc: 'Free, confidential, toll-free mental health support available nationwide.',
+    emergency_card3_title: 'Campus Health & Security',
+    emergency_card3_num: '555-0111',
+    emergency_card3_desc: 'On-campus medical clinic and student security response team.',
 
     // Support Info Panel
     panel_title: 'Student Counseling & Psychological Services',
@@ -20,7 +74,7 @@ const translations = {
     panel_tab_how_it_works: 'How It Works',
     panel_tab_faqs: 'Quick FAQs',
     panel_step1_title: 'Submit Intake',
-    panel_step1_desc: 'Share your background, concerns, and meeting availability.',
+    panel_step1_desc: 'Share your background, concerns, and meeting availability in 3 minutes.',
     panel_step2_title: 'Advisor Review',
     panel_step2_desc: 'An authorized counselor reviews your case within 24–48 hours.',
     panel_step3_title: '1-on-1 Session',
@@ -44,6 +98,7 @@ const translations = {
     btn_continue: 'Continue',
     btn_submit: 'Submit Counseling Request',
     btn_submitting: 'Submitting...',
+    btn_back_to_home: 'Back to Home',
 
     // Step 1: Student Academic & Contact Details
     s1_title: 'Student Academic & Contact Details',
@@ -161,6 +216,11 @@ const translations = {
     page_success_review_note: 'A counselor will review your request within 24-48 hours.',
     page_success_back: 'Back to Form',
 
+    // Footer
+    footer_rights: 'All rights reserved. University Student Affairs & Psychological Counseling Services.',
+    footer_privacy_note: 'Strictly confidential and FERPA compliant.',
+    footer_back_to_top: 'Back to Top',
+
     // Validation Errors
     val_first_name: 'First name is required',
     val_last_name: 'Last name is required',
@@ -182,12 +242,66 @@ const translations = {
 
   am: {
     // Navigation & Header
-    nav_title: 'የተማሪዎች የምክር አገልግሎት ቅበላ',
+    nav_title: 'የተማሪዎች ክብካቤ ማዕከል',
     nav_subtitle: 'የዩኒቨርሲቲ የአእምሮ ጤና እና የአካዳሚክ ድጋፍ ማዕከል',
+    nav_home: 'ዋና ገጽ',
+    nav_services: 'አገልግሎቶች',
+    nav_about: 'ስለ እኛ',
+    nav_faqs: 'ጥያቄዎች',
+    nav_emergency: 'የአደጋ ጊዜ መገናኛዎች',
     nav_intake_form: 'የቅበላ ቅጽ',
+    nav_start_intake: 'ቅጽ ሙላ',
     nav_advisor_portal: 'የአማካሪ ፖርታል',
     nav_lang_toggle: 'English',
     nav_lang_label: 'ቋንቋ',
+
+    // Hero Section
+    hero_badge: 'የዩኒቨርሲቲ ተማሪዎች የአእምሮ ጤና እና የአካዳሚክ ድጋፍ',
+    hero_title: 'አዛኝ እና ሚስጥራዊ የተማሪዎች ክብካቤ',
+    hero_subtitle: 'ለእያንዳንዱ ተማሪ ደህንነቱ የተጠበቀና አስተማማኝ ማዕከል። ከክፍያ ነፃ የሆነ ሚስጥራዊ የስነ-ልቦና ምክር፣ የአካዳሚክ መመሪያ እና የአስቸኳይ ጊዜ ድጋፍ ያግኙ።',
+    hero_cta_primary: 'እርዳታ ለማግኘት ይመዝገቡ',
+    hero_cta_secondary: 'አገልግሎቶቻችንን ይመልከቱ',
+    hero_trust_free: 'ለተማሪዎች 100% ነፃ',
+    hero_trust_confidential: 'ሚስጥራዊ እና በህግ የተጠበቀ',
+    hero_trust_licensed: 'ፈቃድ ያላቸው ባለሙያ አማካሪዎች',
+    hero_trust_speed: 'በ24–48 ሰዓታት ውስጥ ፈጣን ምላሽ',
+
+    // Services Section
+    services_section_tag: 'የድጋፍ ፕሮግራሞቻችን',
+    services_title: 'ለእርስዎ የተዘጋጁ ልዩ አገልግሎቶች',
+    services_desc: 'ከልማዳዊ የትምህርት ጫናዎች ጀምሮ እስከ ግል ህይወት ፈተናዎች ድረስ፣ የባለሙያ አማካሪ ቡድናችን በሁሉም ደረጃ ከእርስዎ ጋር አለ።',
+    service1_title: 'የአእምሮ ጤና እና ስነ-ልቦና ምክር',
+    service1_desc: 'ስለ ጭንቀት፣ ድብርት፣ ስሜታዊ ድካም፣ ሀዘን እና የውስጥ ጥንካሬን ስለመገንባት የሚሰጥ ሚስጥራዊ ድጋፍ።',
+    service2_title: 'የአካዳሚክ መመሪያ እና ስልጠና',
+    service2_desc: 'ከባድ የትምህርት ጫናን፣ የፈተና ፍርሃትን፣ የመነሳሳት መቀነስን እና የትምህርት-ህይወት ሚዛንን የማስተካከል ስልቶች።',
+    service3_title: 'አስቸኳይ ቀውስ እና የቅድሚያ ድጋፍ',
+    service3_desc: 'ከፍተኛ ጭንቀት ወይም ከባድ ቀውስ ውስጥ ለሚገኙ ተማሪዎች የሚሰጥ አፋጣኝ እና ቅድሚያ የተሰጠው ድጋፍ።',
+    service4_title: 'ጤንነት እና የህይወት ክህሎት',
+    service4_desc: 'ስለ ጤናማ እንቅልፍ፣ መልካም የግንኙነት ባህል፣ የራስ መተማመን እና ጤናማ የህይወት ልምዶች ምክር።',
+
+    // About Us Section
+    about_section_tag: 'ስለ እኛ',
+    about_title: 'ለትምህርትዎ እና ለስሜት ደህንነትዎ የቆምን',
+    about_p1: 'የዩኒቨርሲቲ ህይወት አስደሳች እድሎችን እንዲሁም ያልተጠበቁ ጫናዎችን ይዞ ይመጣል። ይህ የተማሪዎች ማዕከል የተቋቋመው እያንዳንዱ ተማሪ ያለምንም ፍረጃ፣ ያለምንም ክፍያ ወይም መሰናክል ድጋፍ የሚያገኝበት አስተማማኝ መጠለያ እንዲሆን ነው።',
+    about_p2: 'ቡድናችን ፈቃድ ያላቸው የስነ-ልቦና ባለሙያዎችን፣ የአካዳሚክ አማካሪዎችን እና የተማሪዎች ደህንነት ባለሙያዎችን ያቀፈ ሲሆን የFERPA እና የዩኒቨርሲቲውን የጥብቅ ሚስጥራዊነት ደንቦች በጥብቅ ይከተላል።',
+    about_badge_ferpa_title: '100% የተረጋገጠ ሚስጥራዊነት',
+    about_badge_ferpa_desc: 'የቅበላ እና የምክር መረጃዎችዎ በጥብቅ የተጠበቁ ናቸው። ለአስተማሪዎች፣ ለዩኒቨርሲቲው አስተዳደር ወይም ለወላጆች በጭራሽ አይጋሩም።',
+    about_badge_licensed_title: 'ብቁ እና አዛኝ ባለሙያዎች',
+    about_badge_licensed_desc: 'ሁሉም አማካሪዎች እውቅና ያላቸው እና በተማሪዎች ስነ-ልቦና ላይ ተከታታይ ስልጠና የወሰዱ ባለሙያዎች ናቸው።',
+
+    // Emergency Contacts Section
+    emergency_section_tag: 'አስቸኳይ ድጋፍ እና የስልክ መስመሮች',
+    emergency_title: 'አፋጣኝ እርዳታ ይፈልጋሉ? ከጎንዎ ነን።',
+    emergency_desc: 'እርስዎ ወይም ሌላ ተማሪ አፋጣኝ የአእምሮ ጤና ቀውስ፣ የራስ ጉዳት ስጋት ወይም ከባድ አደጋ ካጋጠመዎት፣ እባክዎ ሳይዘገዩ በእነዚህ መስመሮች ይደውሉ።',
+    emergency_card1_title: 'የካምፓስ አስቸኳይ መስመር',
+    emergency_card1_num: '555-0199',
+    emergency_card1_desc: 'በካምፓስ ውስጥ ለሚፈጠሩ ድንገተኛ ሁኔታዎች 24/7 ክፍት ነው።',
+    emergency_card2_title: 'አገር አቀፍ የነፃ የስልክ መስመር',
+    emergency_card2_num: '988',
+    emergency_card2_desc: 'ነፃ፣ ሚስጥራዊ እና ከክፍያ ነፃ የስነ-ልቦና ድጋፍ መስመር።',
+    emergency_card3_title: 'የካምፓስ ጤና ማዕከል እና ደህንነት',
+    emergency_card3_num: '555-0111',
+    emergency_card3_desc: 'የህክምና ክሊኒክ እና የካምፓስ ደህንነት ቡድን።',
 
     // Support Info Panel
     panel_title: 'የተማሪዎች የምክር እና ስነ-ልቦና አገልግሎት',
@@ -223,6 +337,7 @@ const translations = {
     btn_continue: 'ቀጥል',
     btn_submit: 'የምክር አገልግሎት ጥያቄውን አስገባ',
     btn_submitting: 'በማስገባት ላይ...',
+    btn_back_to_home: 'ወደ ዋና ገጽ ተመለስ',
 
     // Step 1: Student Academic & Contact Details
     s1_title: 'የተማሪው የትምህርት እና የመገናኛ ዝርዝር መረጃ',
@@ -339,6 +454,11 @@ const translations = {
     page_success_req_id: 'የጥያቄ መለያ ቁጥር:',
     page_success_review_note: 'አማካሪ ጥያቄዎን በ24-48 ሰዓታት ውስጥ ይገመግማል።',
     page_success_back: 'ወደ ቅጹ ተመለስ',
+
+    // Footer
+    footer_rights: 'መብቱ በህግ የተጠበቀ ነው። የተማሪዎች ጉዳይ እና የስነ-ልቦና አገልግሎት ማዕከል።',
+    footer_privacy_note: 'ጥብቅ ሚስጥራዊ እና በህግ የተጠበቀ።',
+    footer_back_to_top: 'ወደ ላይ ተመለስ',
 
     // Validation Errors
     val_first_name: 'የመጀመሪያ ስም ማስገባት ግዴታ ነው',

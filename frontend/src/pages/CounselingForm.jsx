@@ -1,8 +1,12 @@
+import { Link } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import { useForm } from '../hooks/useForm';
 import FormContainer from '../components/FormContainer';
 import SupportInfoPanel from '../components/SupportInfoPanel';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function CounselingForm() {
+  const { t } = useLanguage();
   const {
     formData,
     errors,
@@ -15,7 +19,18 @@ export default function CounselingForm() {
   } = useForm();
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-10">
+    <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+      {/* Top Breadcrumb navigation */}
+      <div className="mb-4">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-primary-600 transition px-2.5 py-1 rounded-lg hover:bg-slate-100 cursor-pointer"
+        >
+          <ArrowLeft size={14} />
+          <span>{t('btn_back_to_home')}</span>
+        </Link>
+      </div>
+
       {/* Split-Screen Layout (Stacked on mobile/tablet, 2 Columns on Desktop) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start w-full">
         {/* Support & Information Panel (5 columns on desktop, below form on mobile) */}
