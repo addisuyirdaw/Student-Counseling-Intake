@@ -18,6 +18,11 @@ function NavigationBar() {
     setMobileMenuOpen(false);
   }, [location.pathname]);
 
+  // Hide navigation bar entirely on dedicated staff login page
+  if (location.pathname === '/staff') {
+    return null;
+  }
+
   const navLinks = [
     { label: t('nav_home'), to: '/' },
     { label: t('nav_services'), href: location.pathname === '/' ? '#services' : '/#services' },
