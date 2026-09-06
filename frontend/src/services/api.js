@@ -84,6 +84,11 @@ export async function getStaffList() {
   return response.data;
 }
 
+export async function createStaffMember(data) {
+  const response = await authApi.post('/staff/create', data);
+  return response.data;
+}
+
 export async function adminUpdateStaff(id, data) {
   const response = await authApi.patch(`/staff/${id}`, data);
   return response.data;

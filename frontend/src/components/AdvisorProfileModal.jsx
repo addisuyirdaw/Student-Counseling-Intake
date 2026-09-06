@@ -17,8 +17,10 @@ import {
   Camera,
   Upload,
   Trash2,
+  UserPlus,
+  Plus,
 } from 'lucide-react';
-import { updateAdvisorProfile, getStaffList, adminUpdateStaff } from '../services/api';
+import { updateAdvisorProfile, getStaffList, adminUpdateStaff, createStaffMember } from '../services/api';
 
 export default function AdvisorProfileModal({ isOpen, onClose, authUser, onProfileUpdated }) {
   const [activeTab, setActiveTab] = useState('profile'); // 'profile' | 'staff'
@@ -52,6 +54,14 @@ export default function AdvisorProfileModal({ isOpen, onClose, authUser, onProfi
   const [adminActionLoading, setAdminActionLoading] = useState(false);
   const [adminSuccessMsg, setAdminSuccessMsg] = useState(null);
   const [adminErrorMsg, setAdminErrorMsg] = useState(null);
+
+  // Dynamic Staff Creation Form State
+  const [showAddStaffForm, setShowAddStaffForm] = useState(false);
+  const [newStaffName, setNewStaffName] = useState('');
+  const [newStaffEmail, setNewStaffEmail] = useState('');
+  const [newStaffPassword, setNewStaffPassword] = useState('');
+  const [newStaffRole, setNewStaffRole] = useState('COUNSELOR');
+  const [newStaffLoading, setNewStaffLoading] = useState(false);
 
   // Sync user state on open
   useEffect(() => {
@@ -253,6 +263,51 @@ export default function AdvisorProfileModal({ isOpen, onClose, authUser, onProfi
       loadStaff();
     } catch (err) {
       alert(err.response?.data?.error || `Failed to ${action} advisor`);
+    }
+  }
+
+  async function handleCreateStaff(e) {
+    e.preventDefault();
+    setAdminErrorMsg(null);
+    setAdminSuccessMsg(null);
+
+    if (!newStaffName.trim() || newStaffName.trim().length < 2) {
+      setAdminErrorMsg('Staff name must be at least 2 characters.');
+      return;
+    }
+    if (!newStaffEmail.trim() || !newStaffEmail.includes('@')) {
+      setAdminErrorMsg('Please enter a valid university email address.');
+      return;
+    }
+    if (!newStaffPassword || newStaffPassword.length < 6) {
+      setAdminErrorMsg('Password must be at least 6 characters long.');
+      return;
+    }
+
+    setNewStaffLoading(true);
+    try {
+      const res = await createStaffMember({
+        name: newStaffName.trim(),
+        email: newStaffEmail.trim().toLowerCase(),
+        password: newStaffPassword.trim(),
+        role: newStaffRole,
+      });
+
+      setAdminSuccessMsg(res.message || `Advisor ${newStaffName.trim()} created successfully!`);
+      setNewStaffName('');
+      setNewStaffEmail('');
+      setNewStaffPassword('');
+      setNewStaffRole('COUNSELOR');
+      setShowAddStaffForm(false);
+      await loadStaff();
+    } catch (err) {
+      setAdminErrorMsg(
+        err.response?.data?.error ||
+        err.response?.data?.errors?.[0]?.message ||
+        'Failed to create staff member. Please check details and try again.'
+      );
+    } finally {
+      setNewStaffLoading(false);
     }
   }
 
@@ -542,38 +597,167 @@ export default function AdvisorProfileModal({ isOpen, onClose, authUser, onProfi
               </div>
             </form>
           ) : (
-            /* Admin Staff Directory & Credential Reset */
+            /* Admin Staff Directory & Dynamic Staff Management */
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              {/* Directory Header Bar */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2 border-b border-slate-100">
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">Counseling Staff Directory</h4>
-                  <p className="text-[11px] text-slate-500">Admins can reset passwords and manage advisor status.</p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800">Counseling Staff Directory</h4>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                      {staffList.length} Registered {staffList.length === 1 ? 'Advisor' : 'Advisors'}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500">Manage advisor roles, reset credentials, and onboard new staff members.</p>
                 </div>
-                <button
-                  type="button"
-                  onClick={loadStaff}
-                  disabled={staffLoading}
-                  className="p-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition flex items-center gap-1 text-xs font-semibold cursor-pointer"
-                >
-                  <RefreshCw size={13} className={staffLoading ? 'animate-spin' : ''} />
-                  <span>Refresh</span>
-                </button>
+
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowAddStaffForm((prev) => !prev);
+                      setSelectedStaff(null);
+                      setAdminErrorMsg(null);
+                      setAdminSuccessMsg(null);
+                    }}
+                    className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 text-xs font-bold shadow-xs cursor-pointer ${
+                      showAddStaffForm
+                        ? 'bg-slate-200 hover:bg-slate-300 text-slate-800'
+                        : 'bg-primary-600 hover:bg-primary-700 text-white'
+                    }`}
+                  >
+                    <UserPlus size={14} />
+                    <span>{showAddStaffForm ? 'Close Form' : '+ Add New Staff Member'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={loadStaff}
+                    disabled={staffLoading}
+                    title="Refresh staff directory"
+                    className="p-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 rounded-xl transition flex items-center gap-1 text-xs font-semibold cursor-pointer"
+                  >
+                    <RefreshCw size={13} className={staffLoading ? 'animate-spin' : ''} />
+                  </button>
+                </div>
               </div>
 
               {adminSuccessMsg && (
-                <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-xs font-semibold flex items-center gap-2">
+                <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-xs font-semibold flex items-center gap-2 animate-fadeIn">
                   <CheckCircle2 size={16} className="text-emerald-600 flex-shrink-0" />
                   <span>{adminSuccessMsg}</span>
                 </div>
               )}
               {adminErrorMsg && (
-                <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 text-xs font-semibold flex items-center gap-2">
+                <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 text-xs font-semibold flex items-center gap-2 animate-fadeIn">
                   <AlertCircle size={16} className="text-rose-600 flex-shrink-0" />
                   <span>{adminErrorMsg}</span>
                 </div>
               )}
 
-              {/* Password Reset Sub-Form when a staff is selected */}
+              {/* Inline "+ Add New Staff Member" Form Card */}
+              {showAddStaffForm && (
+                <form
+                  onSubmit={handleCreateStaff}
+                  className="p-4 bg-slate-50 border-2 border-primary-500/30 rounded-2xl space-y-3.5 shadow-xs animate-fadeIn"
+                >
+                  <div className="flex items-center justify-between pb-1.5 border-b border-slate-200/80">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-lg bg-primary-100 text-primary-700 flex items-center justify-center">
+                        <UserPlus size={14} />
+                      </div>
+                      <h5 className="text-xs font-bold text-slate-900">Register New Staff Member</h5>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddStaffForm(false)}
+                      className="text-slate-400 hover:text-slate-600 text-xs font-semibold cursor-pointer"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">Full Name</label>
+                      <input
+                        type="text"
+                        value={newStaffName}
+                        onChange={(e) => setNewStaffName(e.target.value)}
+                        placeholder="e.g. Dr. Marcus Vance"
+                        required
+                        className="w-full px-3 py-1.5 text-xs bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-slate-900"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">University Email</label>
+                      <input
+                        type="email"
+                        value={newStaffEmail}
+                        onChange={(e) => setNewStaffEmail(e.target.value)}
+                        placeholder="mvance@university.edu"
+                        required
+                        className="w-full px-3 py-1.5 text-xs bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-slate-900"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">Temporary Password</label>
+                      <input
+                        type="password"
+                        value={newStaffPassword}
+                        onChange={(e) => setNewStaffPassword(e.target.value)}
+                        placeholder="Min. 6 characters"
+                        required
+                        className="w-full px-3 py-1.5 text-xs bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-slate-900"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">Staff Role</label>
+                      <select
+                        value={newStaffRole}
+                        onChange={(e) => setNewStaffRole(e.target.value)}
+                        className="w-full px-3 py-1.5 text-xs bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-slate-900 cursor-pointer"
+                      >
+                        <option value="COUNSELOR">COUNSELOR (Student Sessions & Notes)</option>
+                        <option value="LEAD_ADVISOR">LEAD_ADVISOR (Triage & Approvals)</option>
+                        <option value="ADMIN">ADMIN (Full System Administration)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setShowAddStaffForm(false)}
+                      className="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-200/60 rounded-xl transition cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={newStaffLoading}
+                      className="px-4 py-1.5 text-xs font-bold text-white bg-primary-600 hover:bg-primary-700 rounded-xl transition flex items-center gap-1.5 shadow-xs disabled:opacity-50 cursor-pointer"
+                    >
+                      {newStaffLoading ? (
+                        <>
+                          <Loader2 size={13} className="animate-spin" />
+                          <span>Creating Staff...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Plus size={14} />
+                          <span>Create Staff Member</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {/* Password Reset Sub-Form when a staff member is selected */}
               {selectedStaff && (
                 <form
                   onSubmit={handleAdminResetPassword}
@@ -589,7 +773,7 @@ export default function AdvisorProfileModal({ isOpen, onClose, authUser, onProfi
                         setSelectedStaff(null);
                         setAdminNewPass('');
                       }}
-                      className="text-slate-400 hover:text-white text-xs"
+                      className="text-slate-400 hover:text-white text-xs cursor-pointer"
                     >
                       Cancel
                     </button>
@@ -614,37 +798,58 @@ export default function AdvisorProfileModal({ isOpen, onClose, authUser, onProfi
                 </form>
               )}
 
-              {/* Staff List */}
+              {/* Dynamic Staff List */}
               {staffLoading ? (
                 <div className="py-8 text-center text-slate-500 flex flex-col items-center gap-2">
                   <Loader2 size={24} className="animate-spin text-primary-600" />
                   <span className="text-xs font-medium">Loading advisor directory...</span>
                 </div>
+              ) : staffList.length === 0 ? (
+                <div className="py-8 text-center bg-slate-50 border border-dashed border-slate-200 rounded-xl">
+                  <Users size={28} className="mx-auto text-slate-400 mb-2" />
+                  <p className="text-xs font-bold text-slate-700">No staff members found</p>
+                  <p className="text-[11px] text-slate-500 mt-0.5">Click "+ Add New Staff Member" above to register an advisor.</p>
+                </div>
               ) : (
-                <div className="divide-y divide-slate-100 border border-slate-200 rounded-xl overflow-hidden">
+                <div className="divide-y divide-slate-100 border border-slate-200 rounded-xl overflow-hidden bg-white shadow-2xs">
                   {staffList.map((staff) => (
-                    <div key={staff.id} className="p-3 flex items-center justify-between hover:bg-slate-50/70 transition gap-2">
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-xs font-bold text-slate-900 truncate">{staff.name}</span>
-                          <span
-                            className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${
-                              staff.role === 'ADMIN'
-                                ? 'bg-purple-50 text-purple-700 border-purple-200'
-                                : staff.role === 'LEAD_ADVISOR'
-                                ? 'bg-blue-50 text-blue-700 border-blue-200'
-                                : 'bg-slate-100 text-slate-600 border-slate-200'
-                            }`}
-                          >
-                            {staff.role}
-                          </span>
-                          {!staff.isActive && (
-                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">
-                              Inactive
+                    <div key={staff.id} className="p-3 sm:p-3.5 flex items-center justify-between hover:bg-slate-50/80 transition gap-2.5">
+                      <div className="flex items-center gap-3 min-w-0">
+                        {/* Avatar Thumbnail or Initials */}
+                        {staff.avatarUrl ? (
+                          <img
+                            src={staff.avatarUrl}
+                            alt={staff.name}
+                            className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl object-cover border border-primary-400/50 shadow-2xs flex-shrink-0"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-primary-600 to-indigo-600 text-white text-[11px] font-bold flex items-center justify-center shadow-2xs flex-shrink-0">
+                            {getInitials(staff.name)}
+                          </div>
+                        )}
+
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-xs font-bold text-slate-900 truncate">{staff.name}</span>
+                            <span
+                              className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${
+                                staff.role === 'ADMIN'
+                                  ? 'bg-purple-50 text-purple-700 border-purple-200'
+                                  : staff.role === 'LEAD_ADVISOR'
+                                  ? 'bg-blue-50 text-blue-700 border-blue-200'
+                                  : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                              }`}
+                            >
+                              {staff.role}
                             </span>
-                          )}
+                            {!staff.isActive && (
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">
+                                Inactive
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[11px] text-slate-500 truncate">{staff.email}</p>
                         </div>
-                        <p className="text-[11px] text-slate-500 truncate">{staff.email}</p>
                       </div>
 
                       <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -652,6 +857,7 @@ export default function AdvisorProfileModal({ isOpen, onClose, authUser, onProfi
                           type="button"
                           onClick={() => {
                             setSelectedStaff(staff);
+                            setShowAddStaffForm(false);
                             setAdminNewPass('');
                             setAdminSuccessMsg(null);
                             setAdminErrorMsg(null);
