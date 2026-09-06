@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
-import { Shield, GraduationCap, HeartHandshake, LogIn } from 'lucide-react';
+import { Shield, HeartHandshake, Languages } from 'lucide-react';
 import CounselingForm from './pages/CounselingForm';
 import SuccessPage from './pages/SuccessPage';
 import CounselorDashboard from './pages/CounselorDashboard';
+import { LanguageProvider, useLanguage } from './context/LanguageContext';
 
 function NavigationBar() {
   const location = useLocation();
+  const { lang, toggleLanguage, t } = useLanguage();
   const [hasAdvisorSession, setHasAdvisorSession] = useState(false);
 
   useEffect(() => {
@@ -15,7 +17,6 @@ function NavigationBar() {
       setHasAdvisorSession(Boolean(stored));
     };
     checkAuth();
-    // Check when route changes
   }, [location.pathname]);
 
   return (
@@ -27,25 +28,57 @@ function NavigationBar() {
           </div>
           <div className="min-w-0">
             <h1 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight leading-none truncate">
-              Student Counseling Intake
+              {t('nav_title')}
             </h1>
             <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium block truncate">
-              University Mental Health & Academic Support
+              {t('nav_subtitle')}
             </span>
           </div>
         </Link>
 
-        {/* Public Navigation - 'Requests' is removed for general users */}
+        {/* Navigation & Controls */}
         <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+          {/* Prominent Language Switcher */}
+          <button
+            type="button"
+            onClick={toggleLanguage}
+            title={lang === 'en' ? 'Switch to Amharic (አማርኛ)' : 'Switch to English'}
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-slate-100 hover:bg-slate-200/80 border border-slate-300/80 rounded-xl transition text-xs font-semibold cursor-pointer shadow-2xs group"
+          >
+            <Languages size={15} className="text-primary-600 group-hover:rotate-12 transition-transform" />
+            <div className="flex items-center gap-1 text-[11px] sm:text-xs">
+              <span
+                className={`px-1.5 py-0.5 rounded-md transition ${
+                  lang === 'en'
+                    ? 'bg-primary-600 text-white font-bold shadow-2xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                EN
+              </span>
+              <span className="text-slate-300">|</span>
+              <span
+                className={`px-1.5 py-0.5 rounded-md transition font-amharic ${
+                  lang === 'am'
+                    ? 'bg-primary-600 text-white font-bold shadow-2xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                አማርኛ
+              </span>
+            </div>
+          </button>
+
+          {/* Intake Form Link */}
           <Link
             to="/"
             className={`text-xs font-semibold px-2.5 sm:px-3 py-1.5 rounded-lg transition ${
-              location.pathname === '/' 
-                ? 'bg-slate-100 text-slate-900' 
+              location.pathname === '/'
+                ? 'bg-slate-100 text-slate-900'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            Intake Form
+            {t('nav_intake_form')}
           </Link>
 
           {/* Secure Advisor Portal Entry Point */}
@@ -58,7 +91,7 @@ function NavigationBar() {
             }`}
           >
             <Shield size={13} className={location.pathname === '/requests' ? 'text-primary-300' : 'text-slate-400'} />
-            <span>Advisor Portal</span>
+            <span>{t('nav_advisor_portal')}</span>
           </Link>
         </div>
       </div>
@@ -68,19 +101,21 @@ function NavigationBar() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <div className="min-h-screen bg-slate-50 flex flex-col">
-        <NavigationBar />
-        <main className="flex-1">
-          <Routes>
-            <Route path="/" element={<CounselingForm />} />
-            <Route path="/success/:id" element={<SuccessPage />} />
-            <Route path="/requests" element={<CounselorDashboard />} />
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        </main>
-      </div>
-    </BrowserRouter>
+    <LanguageProvider>
+      <BrowserRouter>
+        <div className="min-h-screen bg-slate-50 flex flex-col">
+          <NavigationBar />
+          <main className="flex-1">
+            <Routes>
+              <Route path="/" element={<CounselingForm />} />
+              <Route path="/success/:id" element={<SuccessPage />} />
+              <Route path="/requests" element={<CounselorDashboard />} />
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          </main>
+        </div>
+      </BrowserRouter>
+    </LanguageProvider>
   );
 }
 

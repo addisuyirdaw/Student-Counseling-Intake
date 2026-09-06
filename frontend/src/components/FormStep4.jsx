@@ -1,26 +1,26 @@
 import { ShieldCheck, PenTool } from 'lucide-react';
 import SignatureCanvas from './SignatureCanvas';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function FormStep4({ formData, errors, updateField }) {
+  const { t } = useLanguage();
+
   return (
     <div className="space-y-4 fade-in">
       <div>
-        <h2 className="text-base sm:text-lg font-bold text-slate-900">Consent & Electronic Signature</h2>
+        <h2 className="text-base sm:text-lg font-bold text-slate-900">{t('s4_title')}</h2>
         <p className="text-xs text-slate-500 mt-0.5">
-          Please review the confidentiality terms and draw your signature below.
+          {t('s4_subtitle')}
         </p>
       </div>
 
       <div className="bg-primary-50/70 border border-primary-200/80 rounded-xl p-3.5 sm:p-4 text-xs text-primary-900 leading-relaxed shadow-2xs">
         <div className="flex items-center gap-2 font-bold text-primary-950 mb-1.5">
           <ShieldCheck size={16} className="text-primary-600 flex-shrink-0" />
-          <span>Confidentiality & Care Agreement</span>
+          <span>{t('s4_agreement_title')}</span>
         </div>
         <p className="text-slate-700 leading-relaxed text-[11px] sm:text-xs">
-          By submitting this intake form, I understand that all information provided is strictly confidential and
-          protected in accordance with FERPA and university privacy standards. I understand this form is not a
-          substitute for emergency medical services and that my responses will only be accessed by authorized counseling
-          professionals. I consent to the collection and processing of my details for academic and wellness counseling.
+          {t('s4_agreement_text')}
         </p>
       </div>
 
@@ -33,7 +33,7 @@ export default function FormStep4({ formData, errors, updateField }) {
             className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500 border-slate-300 mt-0.5 flex-shrink-0"
           />
           <span className="text-xs font-semibold text-slate-700 leading-snug">
-            I have read, understood, and agree to the terms above <span className="text-red-500">*</span>
+            {t('s4_consent_check')}
           </span>
         </label>
         {errors.consentGiven && <p className="text-red-500 text-xs mt-1">{errors.consentGiven}</p>}
@@ -42,7 +42,7 @@ export default function FormStep4({ formData, errors, updateField }) {
       <div className="pt-1">
         <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 mb-1.5">
           <PenTool size={14} className="text-primary-600" />
-          <span>Electronic Signature <span className="text-red-500">*</span></span>
+          <span>{t('s4_signature_label')}</span>
         </div>
         <SignatureCanvas
           signatureDataUrl={formData.signatureDataUrl}

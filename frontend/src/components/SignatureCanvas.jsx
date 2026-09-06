@@ -1,13 +1,16 @@
 import { useRef, useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function SignatureCanvas({ signatureDataUrl, onSignatureChange }) {
+  const { t } = useLanguage();
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [hasSignature, setHasSignature] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (signatureDataUrl) {
       const img = new Image();
@@ -97,15 +100,15 @@ export default function SignatureCanvas({ signatureDataUrl, onSignatureChange })
             onClick={clearSignature}
             className="absolute top-2.5 right-2.5 bg-white/90 hover:bg-rose-50 text-slate-600 hover:text-rose-600 border border-slate-200 hover:border-rose-200 rounded-lg px-2 py-1 text-[11px] font-semibold transition flex items-center gap-1 shadow-2xs cursor-pointer"
           >
-            <X size={12} /> Clear
+            <X size={12} /> {t('s4_signature_clear')}
           </button>
         ) : (
           <div className="absolute inset-0 pointer-events-none flex items-center justify-center text-slate-400 text-xs font-medium text-center px-4">
-            Sign here using your mouse, trackpad, or finger
+            {t('s4_signature_ph')}
           </div>
         )}
       </div>
-      <p className="text-[11px] text-slate-400">Your digital signature validates this intake submission.</p>
+      <p className="text-[11px] text-slate-400">{t('s4_signature_note')}</p>
     </div>
   );
 }

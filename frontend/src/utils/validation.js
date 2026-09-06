@@ -63,7 +63,26 @@ export const fullCounselingSchema = z.intersection(
   z.intersection(step3Schema, step4Schema)
 );
 
-export function validateStep(step, data) {
+const amharicMessages = {
+  firstName: 'የመጀመሪያ ስም ማስገባት ግዴታ ነው',
+  lastName: 'የአባት ስም ማስገባት ግዴታ ነው',
+  email: 'እባክዎ ትክክለኛ የዩኒቨርሲቲ ኢሜይል ያስገቡ',
+  phone: 'እባክዎ ትክክለኛ የስልክ ቁጥር ያስገቡ (ቢያንስ 7 ዲጂት)',
+  studentId: 'የተማሪ መታወቂያ (ID) ማስገባት ግዴታ ነው',
+  department: 'እባክዎ የትምህርት ክፍልዎን ወይም ፕሮግራምዎን ይምረጡ',
+  departmentCustom: 'እባክዎ የትምህርት ክፍልዎን ይግለጹ',
+  yearInSchool: 'እባክዎ የትምህርት ዓመትዎን ይምረጡ',
+  yearCustom: 'እባክዎ የትምህርት ዓመትዎን ይግለጹ',
+  counselingTopic: 'እባክዎ ዋናውን የምክር ርዕስ ይምረጡ',
+  topicCustom: 'እባክዎ የምክር ርዕስዎን ይግለጹ',
+  concernDescription: 'እባክዎ የሚያሳስብዎትን ጉዳይ አጭር መግለጫ ያስገቡ (ቢያንስ 5 ፊደላት)',
+  preferredDays: 'እባክዎ ቢያንስ አንድ ተመራጭ የስብሰባ ቀን ይምረጡ',
+  preferredTimeSlots: 'እባክዎ ቢያንስ አንድ ተመራጭ የሰዓት ክፍተት ይምረጡ',
+  consentGiven: 'በምስጢራዊነት እና የክብካቤ ደንቦች መስማማት አለብዎት',
+  signatureDataUrl: 'እባክዎ ዲጂታል ፊርማዎን ያስገቡ',
+};
+
+export function validateStep(step, data, lang = 'en') {
   let schema;
   if (step === 1) schema = step1Schema;
   else if (step === 2) schema = step2Schema;
@@ -80,7 +99,7 @@ export function validateStep(step, data) {
   for (const issue of result.error.issues) {
     const field = issue.path[0];
     if (field && !errors[field]) {
-      errors[field] = issue.message;
+      errors[field] = lang === 'am' && amharicMessages[field] ? amharicMessages[field] : issue.message;
     }
   }
   return { success: false, errors };

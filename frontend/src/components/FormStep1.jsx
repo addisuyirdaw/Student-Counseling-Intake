@@ -1,23 +1,26 @@
 import { User, Mail, Phone, CreditCard, Award, BookOpen, GraduationCap, ChevronDown, Edit3 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function FormStep1({ formData, errors, updateField }) {
+  const { t } = useLanguage();
+
   const departments = [
-    'Freshman / Remedial',
-    'Social Sciences',
-    'Natural Sciences',
-    'Computer Science (CS)',
-    'Software Engineering (SE)',
-    'Engineering (Other)',
-    'Other (Specify Custom Department)',
+    { value: 'Freshman / Remedial', label: t('s1_dept_freshman') },
+    { value: 'Social Sciences', label: t('s1_dept_social') },
+    { value: 'Natural Sciences', label: t('s1_dept_natural') },
+    { value: 'Computer Science (CS)', label: t('s1_dept_cs') },
+    { value: 'Software Engineering (SE)', label: t('s1_dept_se') },
+    { value: 'Engineering (Other)', label: t('s1_dept_engineering') },
+    { value: 'Other (Specify Custom Department)', label: t('s1_dept_other') },
   ];
 
   const years = [
-    '1st Year',
-    '2nd Year',
-    '3rd Year',
-    '4th Year',
-    '5th Year',
-    'Other (Specify Custom Year)',
+    { value: '1st Year', label: t('s1_year_1') },
+    { value: '2nd Year', label: t('s1_year_2') },
+    { value: '3rd Year', label: t('s1_year_3') },
+    { value: '4th Year', label: t('s1_year_4') },
+    { value: '5th Year', label: t('s1_year_5') },
+    { value: 'Other (Specify Custom Year)', label: t('s1_year_other') },
   ];
 
   const isCustomDepartment = formData.department === 'Other (Specify Custom Department)';
@@ -26,14 +29,14 @@ export default function FormStep1({ formData, errors, updateField }) {
   return (
     <div className="space-y-4 fade-in">
       <div>
-        <h2 className="text-base sm:text-lg font-bold text-slate-900">Student Academic & Contact Details</h2>
-        <p className="text-xs text-slate-500 mt-0.5">Please provide your official university contact information.</p>
+        <h2 className="text-base sm:text-lg font-bold text-slate-900">{t('s1_title')}</h2>
+        <p className="text-xs text-slate-500 mt-0.5">{t('s1_subtitle')}</p>
       </div>
 
       {/* Name Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
         <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1">First Name *</label>
+          <label className="block text-xs font-semibold text-slate-700 mb-1">{t('s1_first_name')}</label>
           <div className="relative">
             <User size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input
@@ -43,14 +46,14 @@ export default function FormStep1({ formData, errors, updateField }) {
               className={`w-full pl-9 pr-3.5 py-2 text-sm bg-slate-50/50 focus:bg-white border rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition ${
                 errors.firstName ? 'border-red-500' : 'border-slate-300'
               }`}
-              placeholder="e.g. Alex"
+              placeholder={t('s1_first_name_ph')}
             />
           </div>
           {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1">Last Name *</label>
+          <label className="block text-xs font-semibold text-slate-700 mb-1">{t('s1_last_name')}</label>
           <div className="relative">
             <User size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input
@@ -60,7 +63,7 @@ export default function FormStep1({ formData, errors, updateField }) {
               className={`w-full pl-9 pr-3.5 py-2 text-sm bg-slate-50/50 focus:bg-white border rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition ${
                 errors.lastName ? 'border-red-500' : 'border-slate-300'
               }`}
-              placeholder="e.g. Rivera"
+              placeholder={t('s1_last_name_ph')}
             />
           </div>
           {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
@@ -70,7 +73,7 @@ export default function FormStep1({ formData, errors, updateField }) {
       {/* Email & Phone Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
         <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1">University Email *</label>
+          <label className="block text-xs font-semibold text-slate-700 mb-1">{t('s1_email')}</label>
           <div className="relative">
             <Mail size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input
@@ -80,14 +83,14 @@ export default function FormStep1({ formData, errors, updateField }) {
               className={`w-full pl-9 pr-3.5 py-2 text-sm bg-slate-50/50 focus:bg-white border rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition ${
                 errors.email ? 'border-red-500' : 'border-slate-300'
               }`}
-              placeholder="student@university.edu"
+              placeholder={t('s1_email_ph')}
             />
           </div>
           {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1">Phone Number *</label>
+          <label className="block text-xs font-semibold text-slate-700 mb-1">{t('s1_phone')}</label>
           <div className="relative">
             <Phone size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input
@@ -97,7 +100,7 @@ export default function FormStep1({ formData, errors, updateField }) {
               className={`w-full pl-9 pr-3.5 py-2 text-sm bg-slate-50/50 focus:bg-white border rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition ${
                 errors.phone ? 'border-red-500' : 'border-slate-300'
               }`}
-              placeholder="(555) 000-0000"
+              placeholder={t('s1_phone_ph')}
             />
           </div>
           {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
@@ -107,7 +110,7 @@ export default function FormStep1({ formData, errors, updateField }) {
       {/* Student ID & GPA Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
         <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1">Student ID *</label>
+          <label className="block text-xs font-semibold text-slate-700 mb-1">{t('s1_student_id')}</label>
           <div className="relative">
             <CreditCard size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input
@@ -117,14 +120,14 @@ export default function FormStep1({ formData, errors, updateField }) {
               className={`w-full pl-9 pr-3.5 py-2 text-sm bg-slate-50/50 focus:bg-white border rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition ${
                 errors.studentId ? 'border-red-500' : 'border-slate-300'
               }`}
-              placeholder="e.g. 20240001"
+              placeholder={t('s1_student_id_ph')}
             />
           </div>
           {errors.studentId && <p className="text-red-500 text-xs mt-1">{errors.studentId}</p>}
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1">Cumulative GPA (Optional)</label>
+          <label className="block text-xs font-semibold text-slate-700 mb-1">{t('s1_gpa')}</label>
           <div className="relative">
             <Award size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input
@@ -132,7 +135,7 @@ export default function FormStep1({ formData, errors, updateField }) {
               value={formData.gpa}
               onChange={(e) => updateField('gpa', e.target.value)}
               className="w-full pl-9 pr-3.5 py-2 text-sm bg-slate-50/50 focus:bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition"
-              placeholder="e.g. 3.75"
+              placeholder={t('s1_gpa_ph')}
             />
           </div>
         </div>
@@ -141,7 +144,7 @@ export default function FormStep1({ formData, errors, updateField }) {
       {/* Department & Year in School Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
         <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1">Department / Program *</label>
+          <label className="block text-xs font-semibold text-slate-700 mb-1">{t('s1_department')}</label>
           <div className="relative">
             <BookOpen size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <select
@@ -151,9 +154,9 @@ export default function FormStep1({ formData, errors, updateField }) {
                 errors.department ? 'border-red-500' : 'border-slate-300'
               }`}
             >
-              <option value="">Select Department</option>
+              <option value="">{t('s1_department_select')}</option>
               {departments.map((d) => (
-                <option key={d} value={d}>{d}</option>
+                <option key={d.value} value={d.value}>{d.label}</option>
               ))}
             </select>
             <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
@@ -162,7 +165,7 @@ export default function FormStep1({ formData, errors, updateField }) {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1">Year in School *</label>
+          <label className="block text-xs font-semibold text-slate-700 mb-1">{t('s1_year')}</label>
           <div className="relative">
             <GraduationCap size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <select
@@ -172,9 +175,9 @@ export default function FormStep1({ formData, errors, updateField }) {
                 errors.yearInSchool ? 'border-red-500' : 'border-slate-300'
               }`}
             >
-              <option value="">Select Academic Year</option>
+              <option value="">{t('s1_year_select')}</option>
               {years.map((y) => (
-                <option key={y} value={y}>{y}</option>
+                <option key={y.value} value={y.value}>{y.label}</option>
               ))}
             </select>
             <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
@@ -189,7 +192,7 @@ export default function FormStep1({ formData, errors, updateField }) {
           {isCustomDepartment ? (
             <div>
               <label className="block text-xs font-semibold text-primary-700 mb-1">
-                Specify Custom Department / Major *
+                {t('s1_custom_dept')}
               </label>
               <div className="relative">
                 <Edit3 size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-primary-500 pointer-events-none" />
@@ -200,7 +203,7 @@ export default function FormStep1({ formData, errors, updateField }) {
                   className={`w-full pl-9 pr-3.5 py-2 text-sm bg-primary-50/30 focus:bg-white border rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition ${
                     errors.departmentCustom ? 'border-red-500' : 'border-primary-300'
                   }`}
-                  placeholder="e.g. Biomedical Engineering, Architecture"
+                  placeholder={t('s1_custom_dept_ph')}
                 />
               </div>
               {errors.departmentCustom && (
@@ -214,7 +217,7 @@ export default function FormStep1({ formData, errors, updateField }) {
           {isCustomYear ? (
             <div>
               <label className="block text-xs font-semibold text-primary-700 mb-1">
-                Specify Custom Academic Year *
+                {t('s1_custom_year')}
               </label>
               <div className="relative">
                 <Edit3 size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-primary-500 pointer-events-none" />
@@ -225,7 +228,7 @@ export default function FormStep1({ formData, errors, updateField }) {
                   className={`w-full pl-9 pr-3.5 py-2 text-sm bg-primary-50/30 focus:bg-white border rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition ${
                     errors.yearCustom ? 'border-red-500' : 'border-primary-300'
                   }`}
-                  placeholder="e.g. Master's 1st Year, PhD Candidate"
+                  placeholder={t('s1_custom_year_ph')}
                 />
               </div>
               {errors.yearCustom && (

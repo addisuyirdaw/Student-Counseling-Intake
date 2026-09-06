@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Loader2, CheckCircle2, ShieldCheck, Check, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Loader2, CheckCircle2, ShieldCheck, Check } from 'lucide-react';
 import FormStep1 from './FormStep1';
 import FormStep2 from './FormStep2';
 import FormStep3 from './FormStep3';
 import FormStep4 from './FormStep4';
 import { submitCounseling } from '../services/api';
 import { validateStep } from '../utils/validation';
+import { useLanguage } from '../context/LanguageContext';
 
-const STEPS = [
-  { num: 1, title: 'Student Info' },
-  { num: 2, title: 'Context & Triage' },
-  { num: 3, title: 'Availability' },
-  { num: 4, title: 'Consent & Sign' },
+const STEP_KEYS = [
+  { num: 1, key: 'step1_name' },
+  { num: 2, key: 'step2_name' },
+  { num: 3, key: 'step3_name' },
+  { num: 4, key: 'step4_name' },
 ];
 
 export default function FormContainer({ formData, errors, updateField, updateArrayField, setErrors, setIsSubmitting, isSubmitting }) {
+  const { t, lang } = useLanguage();
   const [currentStep, setCurrentStep] = useState(1);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submittedData, setSubmittedData] = useState(null);
@@ -55,7 +57,7 @@ export default function FormContainer({ formData, errors, updateField, updateArr
   };
 
   const handleNextStep = () => {
-    const check = validateStep(currentStep, formData);
+    const check = validateStep(currentStep, formData, lang);
     if (!check.success) {
       setErrors(check.errors);
       return;
@@ -68,7 +70,7 @@ export default function FormContainer({ formData, errors, updateField, updateArr
     e.preventDefault();
     setSubmitError(null);
 
-    const check = validateStep(4, formData);
+    const check = validateStep(4, formData, lang);
     if (!check.success) {
       setErrors(check.errors);
       return;
@@ -82,7 +84,7 @@ export default function FormContainer({ formData, errors, updateField, updateArr
     } catch (err) {
       const msg = err.response?.data?.errors
         ? err.response.data.errors.map((e) => `${e.field}: ${e.message}`).join(', ')
-        : err.response?.data?.error || 'Submission failed';
+        : err.response?.data?.error || (lang === 'am' ? 'ጥያቄውን ማስገባት አልተሳካም' : 'Submission failed');
       setSubmitError(msg);
     } finally {
       setIsSubmitting(false);
@@ -99,26 +101,38 @@ export default function FormContainer({ formData, errors, updateField, updateArr
           <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xs">
             <CheckCircle2 size={36} />
           </div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-1.5">Intake Request Received</h2>
+          <h2 className="text-2xl font-bold text-slate-900 mb-1.5">{t('success_received_title')}</h2>
           <p className="text-xs sm:text-sm text-slate-600 mb-5 max-w-md mx-auto leading-relaxed">
-            Thank you, <strong>{formData.firstName}</strong>. Your intake form has been securely logged with our counseling and student affairs department.
+            {t('success_thank_you', { name: formData.firstName })}
           </p>
 
           {submittedData && (
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 max-w-sm mx-auto mb-5 text-xs text-left space-y-1 font-mono text-slate-700">
-              <div><span className="font-bold text-slate-500 font-sans">Student:</span> {formData.firstName} {formData.lastName} ({formData.studentId})</div>
-              <div><span className="font-bold text-slate-500 font-sans">Department:</span> {formData.department === 'Other (Specify Custom Department)' ? formData.departmentCustom : formData.department}</div>
-              <div><span className="font-bold text-slate-500 font-sans">Year:</span> {formData.yearInSchool === 'Other (Specify Custom Year)' ? formData.yearCustom : formData.yearInSchool}</div>
-              <div><span className="font-bold text-slate-500 font-sans">Topic:</span> {formData.counselingTopic === 'Other' ? formData.topicCustom : formData.counselingTopic}</div>
-              <div><span className="font-bold text-slate-500 font-sans">Triage Level:</span> <span className={formData.urgencyLevel === 'HIGH' ? 'text-red-600 font-bold' : 'text-emerald-700 font-bold'}>{formData.urgencyLevel || 'MEDIUM'}</span></div>
-              <div><span className="font-bold text-slate-500 font-sans">Case ID:</span> {submittedData.id}</div>
+              <div>
+                <span className="font-bold text-slate-500 font-sans">{t('success_lbl_student')}</span> {formData.firstName} {formData.lastName} ({formData.studentId})
+              </div>
+              <div>
+                <span className="font-bold text-slate-500 font-sans">{t('success_lbl_dept')}</span> {formData.department === 'Other (Specify Custom Department)' ? formData.departmentCustom : formData.department}
+              </div>
+              <div>
+                <span className="font-bold text-slate-500 font-sans">{t('success_lbl_year')}</span> {formData.yearInSchool === 'Other (Specify Custom Year)' ? formData.yearCustom : formData.yearInSchool}
+              </div>
+              <div>
+                <span className="font-bold text-slate-500 font-sans">{t('success_lbl_topic')}</span> {formData.counselingTopic === 'Other' ? formData.topicCustom : formData.counselingTopic}
+              </div>
+              <div>
+                <span className="font-bold text-slate-500 font-sans">{t('success_lbl_triage')}</span> <span className={formData.urgencyLevel === 'HIGH' ? 'text-red-600 font-bold' : 'text-emerald-700 font-bold'}>{formData.urgencyLevel || 'MEDIUM'}</span>
+              </div>
+              <div>
+                <span className="font-bold text-slate-500 font-sans">{t('success_lbl_case_id')}</span> {submittedData.id}
+              </div>
             </div>
           )}
 
           <div className="bg-primary-50 border border-primary-200 rounded-xl p-3.5 max-w-md mx-auto text-xs text-primary-900 leading-relaxed text-left mb-5 flex items-start gap-2.5">
             <ShieldCheck size={18} className="text-primary-600 flex-shrink-0 mt-0.5" />
             <div>
-              <strong>What Happens Next:</strong> An academic counseling specialist will review your intake and contact your university email (<strong>{formData.email}</strong>) within 24 to 48 business hours to confirm your scheduled appointment time.
+              <strong>{t('success_next_title')}</strong> {t('success_next_desc', { email: formData.email })}
             </div>
           </div>
 
@@ -126,7 +140,7 @@ export default function FormContainer({ formData, errors, updateField, updateArr
             href="/"
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold rounded-xl shadow-xs transition cursor-pointer"
           >
-            Submit Another Request
+            {t('success_btn_another')}
           </a>
         </div>
       </div>
@@ -139,22 +153,23 @@ export default function FormContainer({ formData, errors, updateField, updateArr
       <div className="h-1.5 w-full bg-gradient-to-r from-indigo-600 via-primary-600 to-indigo-700" />
 
       <div className="p-4 sm:p-6 md:p-7">
-        {/* 2. Upgraded Step Progress Indicator with Pill Badges & Active Glow Rings */}
+        {/* 2. Step Progress Indicator */}
         <div className="mb-6">
           <div className="relative px-2">
-            {/* Absolute background connecting track through circle centers (top-4 = 16px) */}
+            {/* Absolute background connecting track */}
             <div className="absolute top-4 left-6 right-6 -translate-y-1/2 h-0.5 bg-slate-200 z-0">
               <div
                 className="h-full bg-primary-600 transition-all duration-300 rounded-full"
-                style={{ width: `${((currentStep - 1) / (STEPS.length - 1)) * 100}%` }}
+                style={{ width: `${((currentStep - 1) / (STEP_KEYS.length - 1)) * 100}%` }}
               />
             </div>
 
             {/* Step Nodes */}
             <div className="flex items-start justify-between relative z-10">
-              {STEPS.map((step) => {
+              {STEP_KEYS.map((step) => {
                 const isCompleted = step.num < currentStep;
                 const isCurrent = step.num === currentStep;
+                const title = t(step.key);
 
                 return (
                   <div key={step.num} className="flex flex-col items-center">
@@ -178,7 +193,7 @@ export default function FormContainer({ formData, errors, updateField, updateArr
                           : 'text-slate-400'
                       }`}
                     >
-                      {step.title}
+                      {title}
                     </span>
                   </div>
                 );
@@ -189,7 +204,7 @@ export default function FormContainer({ formData, errors, updateField, updateArr
           {/* Mobile Current Step Tag */}
           <div className="mt-3 text-center sm:hidden text-xs font-bold text-primary-700 bg-primary-50 py-1.5 px-3 rounded-lg border border-primary-100 flex items-center justify-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-primary-600 animate-pulse" />
-            Step {currentStep} of 4: {STEPS[currentStep - 1].title}
+            {t('step_indicator', { current: currentStep, title: t(STEP_KEYS[currentStep - 1].key) })}
           </div>
         </div>
 
@@ -243,7 +258,7 @@ export default function FormContainer({ formData, errors, updateField, updateArr
               disabled={currentStep === 1}
               className="flex items-center gap-1 sm:gap-1.5 px-3 sm:px-4 py-2 border border-slate-300 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer flex-shrink-0"
             >
-              <ChevronLeft size={14} /> Back
+              <ChevronLeft size={14} /> {t('btn_back')}
             </button>
 
             {currentStep < 4 ? (
@@ -253,7 +268,7 @@ export default function FormContainer({ formData, errors, updateField, updateArr
                 disabled={!canProceed()}
                 className="flex items-center gap-1 sm:gap-1.5 px-4 sm:px-6 py-2 bg-primary-600 text-white rounded-xl text-xs font-bold hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-xs hover:shadow-sm transition cursor-pointer"
               >
-                <span>Continue</span>
+                <span>{t('btn_continue')}</span>
                 <ChevronRight size={14} />
               </button>
             ) : (
@@ -265,13 +280,12 @@ export default function FormContainer({ formData, errors, updateField, updateArr
                 {isSubmitting ? (
                   <>
                     <Loader2 className="animate-spin" size={14} />
-                    <span>Submitting...</span>
+                    <span>{t('btn_submitting')}</span>
                   </>
                 ) : (
                   <>
                     <CheckCircle2 size={14} />
-                    <span className="hidden sm:inline">Submit Counseling Request</span>
-                    <span className="sm:hidden">Submit Request</span>
+                    <span>{t('btn_submit')}</span>
                   </>
                 )}
               </button>
