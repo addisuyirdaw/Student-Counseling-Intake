@@ -1,9 +1,53 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('🌱 Starting database seeding to Neon PostgreSQL...');
+
+  // ─── Seed Advisors ───────────────────────────────────────────────────────
+  const SALT_ROUNDS = 12;
+
+  const advisors = [
+    {
+      name: 'Dr. Katherine Hayes',
+      email: 'advisor@university.edu',
+      role: 'ADMIN',
+      password: 'counselor2024',
+    },
+    {
+      name: 'Dr. Sarah Jenkins',
+      email: 's.jenkins@university.edu',
+      role: 'LEAD_ADVISOR',
+      password: 'counselor2024',
+    },
+    {
+      name: 'Academic Advising Staff',
+      email: 'counselor@university.edu',
+      role: 'COUNSELOR',
+      password: 'counselor2024',
+    },
+  ];
+
+  for (const advisor of advisors) {
+    const passwordHash = await bcrypt.hash(advisor.password, SALT_ROUNDS);
+    await prisma.advisor.upsert({
+      where: { email: advisor.email },
+      update: { name: advisor.name, role: advisor.role, passwordHash },
+      create: {
+        name: advisor.name,
+        email: advisor.email,
+        role: advisor.role,
+        passwordHash,
+        isActive: true,
+      },
+    });
+    console.log(`   ✔ Advisor seeded: ${advisor.name} (${advisor.role})`);
+  }
+
+  // ─── Seed Students & Counseling Requests ─────────────────────────────────
+
 
   // Sample student demo data
   const students = [

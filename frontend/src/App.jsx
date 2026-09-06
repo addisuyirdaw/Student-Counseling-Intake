@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
-import { Shield, HeartHandshake, Languages, Menu, X, ArrowRight } from 'lucide-react';
+import { HeartHandshake, Languages, Menu, X, ArrowRight } from 'lucide-react';
 import HomePage from './pages/HomePage';
 import CounselingForm from './pages/CounselingForm';
 import SuccessPage from './pages/SuccessPage';
 import CounselorDashboard from './pages/CounselorDashboard';
+import StaffLogin from './pages/StaffLogin';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 
 function NavigationBar() {
@@ -71,7 +72,7 @@ function NavigationBar() {
             ))}
           </div>
 
-          {/* Action Controls (Language, Intake Form, Advisor Portal) */}
+          {/* Action Controls (Language + Intake CTA only — Advisor Portal is hidden at /staff) */}
           <div className="hidden sm:flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
             {/* Prominent Language Switcher */}
             <button
@@ -115,19 +116,6 @@ function NavigationBar() {
             >
               <span>{t('nav_start_intake')}</span>
               <ArrowRight size={13} />
-            </Link>
-
-            {/* Secure Advisor Portal Entry Point */}
-            <Link
-              to="/requests"
-              className={`text-xs font-semibold px-2.5 sm:px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 border ${
-                location.pathname === '/requests'
-                  ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                  : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
-              }`}
-            >
-              <Shield size={13} className={location.pathname === '/requests' ? 'text-primary-300' : 'text-slate-400'} />
-              <span>{t('nav_advisor_portal')}</span>
             </Link>
           </div>
 
@@ -187,14 +175,6 @@ function NavigationBar() {
               <span>{t('nav_start_intake')}</span>
               <ArrowRight size={14} />
             </Link>
-
-            <Link
-              to="/requests"
-              className="w-full flex items-center justify-center gap-1.5 py-2.5 px-4 bg-slate-900 text-white rounded-xl text-xs font-semibold shadow-xs"
-            >
-              <Shield size={13} className="text-primary-300" />
-              <span>{t('nav_advisor_portal')}</span>
-            </Link>
           </div>
         </div>
       )}
@@ -213,6 +193,8 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/intake" element={<CounselingForm />} />
               <Route path="/success/:id" element={<SuccessPage />} />
+              {/* /staff — hidden advisor login, not linked in public UI */}
+              <Route path="/staff" element={<StaffLogin />} />
               <Route path="/requests" element={<CounselorDashboard />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>

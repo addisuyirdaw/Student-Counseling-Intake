@@ -44,3 +44,22 @@ model CounselingRequest {
   @@index([studentId])
   @@index([status])
 }
+
+model Advisor {
+  id           String      @id @default(cuid())
+  name         String
+  email        String      @unique
+  role         AdvisorRole @default(COUNSELOR)
+  passwordHash String
+  isActive     Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([email])
+}
+
+enum AdvisorRole {
+  ADMIN
+  LEAD_ADVISOR
+  COUNSELOR
+}
