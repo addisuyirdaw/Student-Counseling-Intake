@@ -1,2 +1,4 @@
 import './config/database.js';
-import './server.js';
+import app from './server.js';
+
+export default app;
