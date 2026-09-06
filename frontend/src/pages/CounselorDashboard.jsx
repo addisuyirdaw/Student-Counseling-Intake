@@ -21,6 +21,13 @@ const STATUS_COLORS = {
 
 const STATUSES = ['PENDING', 'REVIEWED', 'SCHEDULED', 'COMPLETED', 'REJECTED'];
 
+function getInitials(fullName) {
+  if (!fullName) return 'AD';
+  const parts = fullName.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 export default function CounselorDashboard() {
   const [authUser, setAuthUser] = useState(() => {
     try {
@@ -230,9 +237,27 @@ export default function CounselorDashboard() {
       {/* Advisor Authentication Bar */}
       <div className="bg-gradient-to-r from-slate-900 via-primary-950 to-slate-900 text-white rounded-2xl p-3.5 sm:p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border border-slate-800">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/10 flex items-center justify-center text-primary-200 border border-white/15 shadow-inner flex-shrink-0">
-            <ShieldCheck size={20} />
-          </div>
+          {authUser?.avatarUrl ? (
+            <div
+              onClick={() => setProfileModalOpen(true)}
+              className="relative cursor-pointer group flex-shrink-0"
+              title="Click to manage profile photo"
+            >
+              <img
+                src={authUser.avatarUrl}
+                alt={authUser.name || 'Advisor Avatar'}
+                className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl object-cover border-2 border-primary-400/60 shadow-xs group-hover:border-primary-300 transition"
+              />
+            </div>
+          ) : (
+            <div
+              onClick={() => setProfileModalOpen(true)}
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-tr from-primary-600 to-indigo-600 text-white font-bold text-xs sm:text-sm flex items-center justify-center border border-white/20 shadow-inner flex-shrink-0 cursor-pointer hover:from-primary-500 hover:to-indigo-500 transition"
+              title="Click to upload profile photo"
+            >
+              {getInitials(authUser?.name)}
+            </div>
+          )}
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <h2 className="text-sm sm:text-base font-bold tracking-tight truncate">Academic Advisor Portal</h2>

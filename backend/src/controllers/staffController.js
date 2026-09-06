@@ -57,6 +57,7 @@ export async function createStaff(req, res) {
         name: true,
         email: true,
         role: true,
+        avatarUrl: true,
         isActive: true,
         createdAt: true,
       },
@@ -85,6 +86,7 @@ export async function listStaff(req, res) {
         name: true,
         email: true,
         role: true,
+        avatarUrl: true,
         isActive: true,
         createdAt: true,
         updatedAt: true,
@@ -99,8 +101,8 @@ export async function listStaff(req, res) {
 
 /**
  * PATCH /api/v1/auth/staff/me
- * Protected: Logged-in advisor updates their own name, email, or password.
- * Body: { name?, email?, currentPassword?, newPassword? }
+ * Protected: Logged-in advisor updates their own name, email, password, or avatarUrl.
+ * Body: { name?, email?, currentPassword?, newPassword?, avatarUrl? }
  */
 export async function updateSelf(req, res) {
   const advisorId = req.advisor?.id;
@@ -108,7 +110,7 @@ export async function updateSelf(req, res) {
     return res.status(401).json({ error: 'Unauthorized: No advisor session' });
   }
 
-  const { name, email, currentPassword, newPassword } = req.body;
+  const { name, email, currentPassword, newPassword, avatarUrl } = req.body;
 
   try {
     const advisor = await prisma.advisor.findUnique({
@@ -157,6 +159,14 @@ export async function updateSelf(req, res) {
       updateData.passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
     }
 
+    // 4. Update Avatar Photo (URL, Base64 Data URI, or null/empty to clear)
+    if (avatarUrl !== undefined) {
+      const sanitizedAvatar = typeof avatarUrl === 'string' && avatarUrl.trim() ? avatarUrl.trim() : null;
+      if (sanitizedAvatar !== advisor.avatarUrl) {
+        updateData.avatarUrl = sanitizedAvatar;
+      }
+    }
+
     if (Object.keys(updateData).length === 0) {
       const token = jwt.sign(
         {
@@ -164,6 +174,7 @@ export async function updateSelf(req, res) {
           name: advisor.name,
           email: advisor.email,
           role: advisor.role,
+          avatarUrl: advisor.avatarUrl || null,
         },
         JWT_SECRET,
         { expiresIn: '24h' }
@@ -172,9 +183,11 @@ export async function updateSelf(req, res) {
         message: 'No changes detected',
         token,
         user: {
+          id: advisor.id,
           name: advisor.name,
           email: advisor.email,
           role: advisor.role,
+          avatarUrl: advisor.avatarUrl || null,
         },
       });
     }
@@ -187,18 +200,20 @@ export async function updateSelf(req, res) {
         name: true,
         email: true,
         role: true,
+        avatarUrl: true,
         isActive: true,
         updatedAt: true,
       },
     });
 
-    // Generate refreshed JWT token reflecting updated profile
+    // Generate refreshed JWT token reflecting updated profile and avatar
     const token = jwt.sign(
       {
         id: updated.id,
         name: updated.name,
         email: updated.email,
         role: updated.role,
+        avatarUrl: updated.avatarUrl || null,
       },
       JWT_SECRET,
       { expiresIn: '24h' }
@@ -217,9 +232,11 @@ export async function updateSelf(req, res) {
       message: 'Profile updated successfully',
       token,
       user: {
+        id: updated.id,
         name: updated.name,
         email: updated.email,
         role: updated.role,
+        avatarUrl: updated.avatarUrl || null,
       },
     });
   } catch (err) {
@@ -299,6 +316,7 @@ export async function updateStaffById(req, res) {
         name: true,
         email: true,
         role: true,
+        avatarUrl: true,
         isActive: true,
         updatedAt: true,
       },

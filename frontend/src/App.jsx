@@ -182,6 +182,17 @@ function NavigationBar() {
             {hasStaffSession ? (
               /* Staff session badge & sign out button (CTA hidden) */
               <div className="flex items-center gap-2">
+                {staffUser?.avatarUrl ? (
+                  <img
+                    src={staffUser.avatarUrl}
+                    alt={staffUser.name || 'Staff Avatar'}
+                    className="w-7 h-7 rounded-lg object-cover border border-primary-400/60 shadow-2xs flex-shrink-0"
+                  />
+                ) : (
+                  <div className="w-7 h-7 rounded-lg bg-primary-700 text-white font-bold text-[11px] flex items-center justify-center shadow-2xs flex-shrink-0">
+                    {(staffUser?.name || 'A').slice(0, 1).toUpperCase()}
+                  </div>
+                )}
                 <span className="text-[11px] font-medium text-slate-600 hidden md:inline">
                   Staff: <strong className="text-slate-900">{staffUser?.name || 'Advisor'}</strong>
                 </span>

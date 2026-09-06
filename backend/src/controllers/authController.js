@@ -36,6 +36,7 @@ export async function login(req, res) {
     name: advisor.name,
     email: advisor.email,
     role: advisor.role,
+    avatarUrl: advisor.avatarUrl || null,
   };
 
   const token = jwt.sign(tokenPayload, JWT_SECRET, { expiresIn: '24h' });
@@ -58,6 +59,7 @@ export async function login(req, res) {
       name: advisor.name,
       email: advisor.email,
       role: advisor.role,
+      avatarUrl: advisor.avatarUrl || null,
     },
   });
 }
@@ -69,9 +71,11 @@ export function getMe(req, res) {
 
   return res.status(200).json({
     user: {
+      id: req.advisor.id,
       name: req.advisor.name,
       email: req.advisor.email,
       role: req.advisor.role,
+      avatarUrl: req.advisor.avatarUrl || null,
     },
   });
 }

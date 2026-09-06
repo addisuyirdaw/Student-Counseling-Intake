@@ -27,6 +27,7 @@ export const updateSelfSchema = z
       .min(6, 'New password must be at least 6 characters')
       .max(128, 'New password must not exceed 128 characters')
       .optional(),
+    avatarUrl: z.string().nullable().optional(),
   })
   .refine(
     (data) => {
@@ -50,5 +51,6 @@ export const updateStaffAdminSchema = z.object({
     .min(6, 'Password must be at least 6 characters')
     .max(128, 'Password must not exceed 128 characters')
     .optional(),
+  avatarUrl: z.string().nullable().optional(),
   isActive: z.boolean().optional(),
 });

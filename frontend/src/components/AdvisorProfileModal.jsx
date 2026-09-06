@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   X,
   User,
@@ -14,16 +14,22 @@ import {
   Users,
   UserCog,
   RefreshCw,
+  Camera,
+  Upload,
+  Trash2,
 } from 'lucide-react';
 import { updateAdvisorProfile, getStaffList, adminUpdateStaff } from '../services/api';
 
 export default function AdvisorProfileModal({ isOpen, onClose, authUser, onProfileUpdated }) {
   const [activeTab, setActiveTab] = useState('profile'); // 'profile' | 'staff'
   const isAdmin = authUser?.role === 'ADMIN';
+  const fileInputRef = useRef(null);
 
   // Form State for Self Update
   const [name, setName] = useState(authUser?.name || '');
   const [email, setEmail] = useState(authUser?.email || '');
+  const [avatarUrl, setAvatarUrl] = useState(authUser?.avatarUrl || null);
+  const [avatarPreview, setAvatarPreview] = useState(authUser?.avatarUrl || '');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -52,6 +58,8 @@ export default function AdvisorProfileModal({ isOpen, onClose, authUser, onProfi
     if (isOpen && authUser) {
       setName(authUser.name || '');
       setEmail(authUser.email || '');
+      setAvatarUrl(authUser.avatarUrl || null);
+      setAvatarPreview(authUser.avatarUrl || '');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
@@ -81,6 +89,70 @@ export default function AdvisorProfileModal({ isOpen, onClose, authUser, onProfi
   }
 
   if (!isOpen) return null;
+
+  const getInitials = (fullName) => {
+    if (!fullName) return 'AD';
+    const parts = fullName.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  };
+
+  const handlePhotoSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setErrorMsg('Please select a valid image file (PNG, JPG, WebP).');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setErrorMsg('Image file size must be under 5MB.');
+      return;
+    }
+
+    setErrorMsg(null);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = document.createElement('img');
+      img.onload = () => {
+        // Optimize & resize image to max 400x400 for crisp avatar rendering with minimal footprint
+        const maxDim = 400;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          }
+        } else {
+          if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        setAvatarPreview(compressedDataUrl);
+        setAvatarUrl(compressedDataUrl);
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemovePhoto = () => {
+    setAvatarPreview('');
+    setAvatarUrl(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
 
   async function handleSelfSubmit(e) {
     e.preventDefault();
@@ -117,6 +189,7 @@ export default function AdvisorProfileModal({ isOpen, onClose, authUser, onProfi
       const payload = {
         name: name.trim(),
         email: email.trim().toLowerCase(),
+        avatarUrl: avatarUrl !== undefined ? avatarUrl : (authUser?.avatarUrl || null),
       };
       if (newPassword) {
         payload.currentPassword = currentPassword;
@@ -254,6 +327,78 @@ export default function AdvisorProfileModal({ isOpen, onClose, authUser, onProfi
                   <span>{successMsg}</span>
                 </div>
               )}
+
+              {/* Profile Photo Avatar Section */}
+              <div className="flex flex-col sm:flex-row items-center gap-4 p-4 bg-slate-50/90 border border-slate-200/90 rounded-2xl">
+                <div className="relative group flex-shrink-0">
+                  <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-primary-500/40 shadow-sm bg-white flex items-center justify-center">
+                    {avatarPreview ? (
+                      <img
+                        src={avatarPreview}
+                        alt="Profile Avatar Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-tr from-primary-600 to-indigo-600 text-white font-bold text-xl flex items-center justify-center tracking-tight shadow-inner">
+                        {getInitials(name || authUser?.name)}
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute -bottom-1.5 -right-1.5 p-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl shadow-md border-2 border-white transition cursor-pointer"
+                    title="Change photo"
+                    aria-label="Upload photo"
+                  >
+                    <Camera size={13} />
+                  </button>
+                </div>
+
+                <div className="flex-1 text-center sm:text-left space-y-1 min-w-0">
+                  <div className="flex items-center justify-center sm:justify-start gap-2">
+                    <h5 className="text-xs font-bold text-slate-800">Profile Photo</h5>
+                    {avatarPreview && (
+                      <span className="text-[10px] font-semibold text-primary-700 bg-primary-50 px-2 py-0.5 rounded-md border border-primary-200/60">
+                        Custom Avatar
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-slate-500 leading-snug">
+                    Upload a portrait (JPG, PNG, or WebP up to 5MB). Rendered on your staff dashboard and portal banner.
+                  </p>
+
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/png, image/jpeg, image/webp"
+                    onChange={handlePhotoSelect}
+                    className="hidden"
+                  />
+
+                  <div className="flex items-center justify-center sm:justify-start gap-2 pt-1.5 flex-wrap">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 text-xs font-semibold rounded-xl shadow-2xs transition flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <Upload size={13} className="text-primary-600" />
+                      <span>{avatarPreview ? 'Change Photo' : 'Upload Photo'}</span>
+                    </button>
+
+                    {avatarPreview && (
+                      <button
+                        type="button"
+                        onClick={handleRemovePhoto}
+                        className="px-2.5 py-1.5 bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-rose-600 text-xs font-semibold rounded-xl transition flex items-center gap-1 cursor-pointer"
+                      >
+                        <Trash2 size={12} />
+                        <span>Remove</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
 
               {/* Personal Information */}
               <div className="space-y-3">
