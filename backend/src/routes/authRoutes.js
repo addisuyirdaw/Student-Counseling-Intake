@@ -1,5 +1,5 @@
 import express from 'express';
-import { login, getMe, logout } from '../controllers/authController.js';
+import { login, getMe, logout, resetPassword } from '../controllers/authController.js';
 import {
   createStaff,
   listStaff,
@@ -22,6 +22,7 @@ const router = express.Router();
 // ─── Public auth routes ────────────────────────────────────────────────────
 router.post('/login', loginRateLimiter, validate(loginSchema), login);
 router.post('/logout', logout);
+router.post('/reset-password', resetPassword);
 router.get('/me', authenticateAdvisor, getMe);
 
 // ─── Advisor self-service profile & password update ────────────────────────

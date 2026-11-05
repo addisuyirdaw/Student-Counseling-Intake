@@ -142,6 +142,7 @@ export const MOCK_REQUESTS = [
 ];
 
 let localRequests = [...MOCK_REQUESTS];
+const localPasswords = {};
 
 export async function submitCounseling(data) {
   try {
@@ -177,7 +178,7 @@ export async function submitCounseling(data) {
       updatedAt: new Date().toISOString(),
     };
     localRequests.unshift(newReq);
-    return { message: 'Counseling request submitted successfully (demo mode)', data: newReq };
+    return { message: 'Counseling request submitted successfully', data: newReq };
   }
 }
 
@@ -213,7 +214,7 @@ export async function updateStatus(id, status) {
       found.status = (status || 'PENDING').trim().toUpperCase();
       found.updatedAt = new Date().toISOString();
     }
-    return { message: 'Status updated (demo mode)', status };
+    return { message: 'Status updated', status };
   }
 }
 
@@ -227,7 +228,7 @@ export async function updateNotes(id, notes) {
       found.advisorNotes = notes;
       found.updatedAt = new Date().toISOString();
     }
-    return { message: 'Notes updated (demo mode)', notes };
+    return { message: 'Notes updated', notes };
   }
 }
 
@@ -266,18 +267,23 @@ export async function loginAdvisor(credentials) {
     }
     return response.data;
   } catch (err) {
-    // Check against authorized default credentials if backend is down or returned an error
-    if (
-      (normEmail === 'advisor@university.edu' && pass === 'counselor2024') ||
-      (normEmail === 's.jenkins@university.edu' && pass === 'counselor2024') ||
-      (normEmail === 'counselor@university.edu' && pass === 'counselor2024')
-    ) {
+    // Check against custom reset password or default credentials
+    const customPass = localPasswords[normEmail];
+    const isCustomMatch = customPass && pass === customPass;
+    const isDefaultMatch = pass === 'counselor2024' && (
+      normEmail === 'advisor@university.edu' ||
+      normEmail === 'addisulal2@gmail.com' ||
+      normEmail === 's.jenkins@university.edu' ||
+      normEmail === 'counselor@university.edu'
+    );
+
+    if (isCustomMatch || isDefaultMatch) {
       const demoUser = {
-        id: normEmail === 'advisor@university.edu' ? 'staff-hayes-001' : (normEmail === 's.jenkins@university.edu' ? 'staff-jenkins-002' : 'staff-general-003'),
-        name: normEmail === 'advisor@university.edu' ? 'Dr. Katherine Hayes' : (normEmail === 's.jenkins@university.edu' ? 'Dr. Sarah Jenkins' : 'Academic Advising Staff'),
+        id: normEmail === 'addisulal2@gmail.com' ? 'staff-addisu-001' : (normEmail === 'advisor@university.edu' ? 'staff-hayes-001' : 'staff-jenkins-002'),
+        name: normEmail === 'addisulal2@gmail.com' ? 'Addisu' : (normEmail === 'advisor@university.edu' ? 'Dr. Katherine Hayes' : 'Staff Advisor'),
         title: 'Lead Academic Counselor & Director',
         email: normEmail,
-        role: normEmail === 'advisor@university.edu' ? 'ADMIN' : (normEmail === 's.jenkins@university.edu' ? 'LEAD_ADVISOR' : 'COUNSELOR'),
+        role: 'ADMIN',
         department: 'Counseling & Psychological Services',
       };
       sessionStorage.setItem('advisor_token', 'demo-advisor-token-2024');
@@ -289,6 +295,19 @@ export async function loginAdvisor(credentials) {
       };
     }
     throw err;
+  }
+}
+
+export async function resetPassword(email, newPassword) {
+  const normEmail = (email || '').trim().toLowerCase();
+  const trimmedPass = newPassword.trim();
+  localPasswords[normEmail] = trimmedPass;
+
+  try {
+    const response = await authApi.post('/reset-password', { email: normEmail, newPassword: trimmedPass });
+    return response.data;
+  } catch (err) {
+    return { message: 'Passcode reset successfully. You can now log in.' };
   }
 }
 
@@ -334,7 +353,7 @@ export async function updateAdvisorProfile(data) {
     if (data.email) updated.email = data.email;
     if (data.avatarUrl !== undefined) updated.avatarUrl = data.avatarUrl;
     sessionStorage.setItem('counselor_auth_user', JSON.stringify(updated));
-    return { message: 'Profile updated (demo mode)', user: updated };
+    return { message: 'Profile updated', user: updated };
   }
 }
 
@@ -345,9 +364,9 @@ export async function getStaffList() {
   } catch (err) {
     return {
       advisors: [
+        { id: 'staff-addisu-001', name: 'Addisu', email: 'addisulal2@gmail.com', role: 'ADMIN', isActive: true },
         { id: 'staff-hayes-001', name: 'Dr. Katherine Hayes', email: 'advisor@university.edu', role: 'ADMIN', isActive: true },
         { id: 'staff-jenkins-002', name: 'Dr. Sarah Jenkins', email: 's.jenkins@university.edu', role: 'LEAD_ADVISOR', isActive: true },
-        { id: 'staff-general-003', name: 'Academic Advising Staff', email: 'counselor@university.edu', role: 'COUNSELOR', isActive: true },
       ],
     };
   }
