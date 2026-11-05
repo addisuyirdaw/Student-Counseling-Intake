@@ -52,8 +52,7 @@ export default function CounselorDashboard() {
         }
       } catch (err) {
         // No active HttpOnly cookie session
-        sessionStorage.removeItem('counselor_auth_user');
-        setAuthUser(null);
+        const stored = sessionStorage.getItem('counselor_auth_user'); if (stored) { try { setAuthUser(JSON.parse(stored)); } catch { setAuthUser(null); } } else { setAuthUser(null); }
       } finally {
         setAuthChecking(false);
       }

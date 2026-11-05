@@ -3,8 +3,8 @@ import { ShieldCheck, Lock, User, AlertCircle, ArrowRight, Loader2 } from 'lucid
 import { loginAdvisor } from '../services/api';
 
 export default function AdvisorLoginGate({ onLoginSuccess }) {
-  const [email, setEmail] = useState('advisor@university.edu');
-  const [password, setPassword] = useState('counselor2024');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -35,18 +35,18 @@ export default function AdvisorLoginGate({ onLoginSuccess }) {
           err.response?.data?.error ||
           'Too many failed login attempts. Please try again in 15 minutes.'
         );
+      } else if (err.response?.status === 401) {
+        setError(err.response?.data?.error || 'Invalid email or staff passcode');
+      } else if (err.response?.status === 500) {
+        setError(err.response?.data?.error || 'Server error occurred during login. Please check backend logs.');
+      } else if (!err.response) {
+        setError('Cannot connect to backend server. Make sure the backend API is running on port 3001.');
       } else {
-        // Sanitized generic error to prevent user enumeration
-        setError('Invalid email or staff passcode');
+        setError(err.response?.data?.error || 'Invalid email or staff passcode');
       }
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleQuickDemo = () => {
-    setEmail('advisor@university.edu');
-    setPassword('counselor2024');
   };
 
   return (
@@ -130,19 +130,6 @@ export default function AdvisorLoginGate({ onLoginSuccess }) {
               </>
             )}
           </button>
-
-          {/* Quick Demo Button - Completely stripped from production builds */}
-          {import.meta.env.MODE === 'development' && (
-            <div className="pt-2 border-t border-slate-100 text-center">
-              <button
-                type="button"
-                onClick={handleQuickDemo}
-                className="text-xs text-slate-500 hover:text-primary-600 font-medium transition cursor-pointer"
-              >
-                Demo: Instant Sign-In as Dr. Katherine Hayes
-              </button>
-            </div>
-          )}
         </form>
       </div>
     </div>
